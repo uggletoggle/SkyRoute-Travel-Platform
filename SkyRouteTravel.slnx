@@ -4,6 +4,7 @@
     <Project Path="SkyRouteTravel.Application/SkyRouteTravel.Application.csproj" />
     <Project Path="SkyRouteTravel.Infrastructure/SkyRouteTravel.Infrastructure.csproj" />
   </Folder>
-  <Folder Name="/tests/" />
-  <Project Path="SkyRouteTravel.Tests/SkyRouteTravel.Tests.csproj" />
+  <Folder Name="/tests/">
+    <Project Path="SkyRouteTravel.Tests/SkyRouteTravel.Tests.csproj" />
+  </Folder>
 </Solution>
