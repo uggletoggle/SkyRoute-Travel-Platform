@@ -1,0 +1,144 @@
+
+# ============================================================
+# .NET / C# / ASP.NET Core
+# ============================================================
+
+## Build output
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+## Visual Studio cache/options directory
+.vs/
+*.user
+*.userosscache
+*.suo
+*.userprefs
+
+## MSBuild binaries log
+*.binlog
+
+## NuGet
+*.nupkg
+*.snupkg
+*.nuget.props
+**/[Pp]ackages/
+!**/[Pp]ackages/build/
+*.lock.json
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+## Rider / ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+.idea/
+
+## Publish output
+**/publish/
+**/PublishProfiles/*.pubxml.user
+
+## Entity Framework Core migrations snapshot (keep migrations, ignore snapshot build artefact)
+## Uncomment if you don't version the snapshot:
+# **/Migrations/
+
+## ASP.NET Core secrets / configuration
+appsettings.Development.json
+appsettings.Local.json
+**/secrets.json
+**/*.pfx
+**/*.p12
+**/*.key
+**/*.pem
+
+## Docker
+docker-compose.override.yml
+
+## SQLite database files (runtime data, not source)
+**/*.db
+**/*.db-shm
+**/*.db-wal
+**/*.sqlite
+**/*.sqlite3
+
+# ============================================================
+# Angular / Node.js (SkyRouteTravelUI)
+# ============================================================
+# SkyRouteTravelUI has its own .git repository — excluded here.
+# To include it as a git submodule instead, run:
+#   git submodule add <url> SkyRouteTravelUI
+SkyRouteTravelUI/
+
+## Dependencies
+**/node_modules/
+
+## Angular build output
+**/dist/
+**/.angular/
+
+## Environment files (keep .env.example, ignore actual envs)
+.env
+.env.local
+.env.*.local
+!.env.example
+
+## Angular cache
+**/.cache/
+
+## Test coverage
+**/coverage/
+
+## Vitest / Jest cache
+**/.vitest-cache/
+**/.jest-cache/
+
+# ============================================================
+# OS & Editor
+# ============================================================
+
+## macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+## Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.lnk
+
+## VSCode (keep shared settings, ignore personal/workspace state)
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+## JetBrains IDEs
+.idea/
+*.iml
+
+# ============================================================
+# Misc
+# ============================================================
+
+## Temporary files
+*.tmp
+*.temp
+*.bak
+*.swp
+*~
+
+## Logs
+*.log
+
+## Test results
+[Tt]est[Rr]esult*/
+[Bb]uild[Ll]og.*
+TestResults/
+
+## Benchmark results
+BenchmarkDotNet.Artifacts/

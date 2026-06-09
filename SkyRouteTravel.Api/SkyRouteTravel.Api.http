@@ -1,0 +1,64 @@
+@SkyRouteTravel.Api_HostAddress = http://localhost:5218
+
+### Get All Flights
+GET {{SkyRouteTravel.Api_HostAddress}}/flights
+Accept: application/json
+
+### Get Flights Filtered by Origin, Destination and Cabin Class
+GET {{SkyRouteTravel.Api_HostAddress}}/flights?origin=JFK&destination=LHR&cabinClass=Economy
+Accept: application/json
+
+### Get Flights Filtered by City Name
+GET {{SkyRouteTravel.Api_HostAddress}}/flights?origin=New York&destination=London
+Accept: application/json
+
+### Get All Airports
+GET {{SkyRouteTravel.Api_HostAddress}}/airports
+Accept: application/json
+
+### Get All Providers
+GET {{SkyRouteTravel.Api_HostAddress}}/providers
+Accept: application/json
+
+### Book a Flight - Valid Request (GlobalAir / Provider 1 pricing strategy: 10% markup)
+# Note: In a real test, replace the FlightId with a valid GUID returned from the GET /flights request.
+POST {{SkyRouteTravel.Api_HostAddress}}/booking
+Content-Type: application/json
+Accept: application/json
+
+{
+  "flightId": "REPLACE_WITH_VALID_FLIGHT_ID",
+  "numberOfPassengers": 2,
+  "passengers": [
+    {
+      "fullName": "Alice Smith",
+      "email": "alice.smith@example.com",
+      "documentType": "Passport Number",
+      "documentNumber": "AB123456"
+    },
+    {
+      "fullName": "Bob Smith",
+      "email": "bob.smith@example.com",
+      "documentType": "National ID",
+      "documentNumber": "1234-5678"
+    }
+  ]
+}
+
+### Book a Flight - Invalid Request (Tests Validation: Number of passengers mismatch, invalid email, and invalid document pattern)
+POST {{SkyRouteTravel.Api_HostAddress}}/booking
+Content-Type: application/json
+Accept: application/json
+
+{
+  "flightId": "some-invalid-guid",
+  "numberOfPassengers": 3,
+  "passengers": [
+    {
+      "fullName": "",
+      "email": "invalid-email-format",
+      "documentType": "Passport Number",
+      "documentNumber": "short"
+    }
+  ]
+}
