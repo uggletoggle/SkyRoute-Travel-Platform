@@ -64,12 +64,8 @@ docker-compose.override.yml
 **/*.sqlite3
 
 # ============================================================
-# Angular / Node.js (SkyRouteTravelUI)
+# Angular / Node.js (SkyRouteTravelUI — tracked as git submodule)
 # ============================================================
-# SkyRouteTravelUI has its own .git repository — excluded here.
-# To include it as a git submodule instead, run:
-#   git submodule add <url> SkyRouteTravelUI
-SkyRouteTravelUI/
 
 ## Dependencies
 **/node_modules/
