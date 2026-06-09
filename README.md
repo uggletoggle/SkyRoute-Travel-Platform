@@ -218,6 +218,88 @@ Then commit the updated `.gitmodules` file.
 
 ---
 
+## 🏛️ Architecture Decisions, Trade-offs & Known Limitations
+
+### 1. Clean Architecture (layered backend)
+
+**Decision:** The backend is split into four projects — `Api`, `Application`, `Infrastructure`, and `Presentation` — following Clean Architecture principles. Dependency flow is strictly inward: only `Infrastructure` knows about EF Core; only `Application` knows about domain rules.
+
+**Why:** Keeps business logic testable in isolation (no database required for unit tests), makes it straightforward to swap the data store, and prevents accidental coupling between the HTTP layer and persistence code.
+
+**Trade-off:** More boilerplate than a single-project API — each new feature requires a service interface, a repository interface, a DTO, and an AutoMapper profile. For a project of this size, that overhead is real.
+
+---
+
+### 2. ASP.NET Core Minimal APIs (not MVC Controllers)
+
+**Decision:** All HTTP endpoints are registered as Minimal API route handlers in `Program.cs` / endpoint extension methods, rather than deriving from `ControllerBase`.
+
+**Why:** Less ceremony, faster startup, and first-class support for OpenAPI generation in .NET 9. Endpoint parameters and return types are explicit.
+
+**Trade-off:** Larger endpoint groups can become verbose inside a single file. Complex filter pipelines (e.g., action filters, result filters) are less ergonomic than in controller-based MVC.
+
+---
+
+### 3. SQLite as the default database
+
+**Decision:** EF Core is configured against a local SQLite file (`SkyRouteTravel.db`) that is created and seeded automatically on first run.
+
+**Why:** Zero infrastructure dependency — anyone can clone and run without installing a database server. Ideal for a portfolio / demo project.
+
+**Trade-off / Known limitation:** SQLite does not support every SQL Server or PostgreSQL feature (e.g., concurrent writes under high load, certain migration paths). To move to a production-grade DB, update the `AddDbContext` registration in `SkyRouteTravel.Infrastructure/DependencyInjection.cs` and re-run `dotnet ef migrations add`.
+
+---
+
+### 4. Strategy Pattern for flight providers
+
+**Decision:** Each flight provider (GlobalAir, BudgetWings, Default) implements `IFlightProviderStrategy`, selected at runtime by `FlightProviderStrategyFactory` based on the provider name stored in the database.
+
+**Why:** Adding a new provider requires only a new class that implements the interface — the factory and the rest of the application are untouched. This was the most explicit way to unit-test provider-specific pricing logic in isolation (see `SkyRouteTravel.Tests`).
+
+**Trade-off:** Strategies are currently instantiated directly inside the factory (`new GlobalAirStrategy()`), bypassing the DI container. This means strategies cannot themselves have injected dependencies. If providers ever need to call external APIs, the factory will need to become DI-aware (accept an `IServiceProvider` or a keyed service map).
+
+---
+
+### 5. Angular signals for reactive state (no NgRx / RxJS BehaviorSubject)
+
+**Decision:** The `ApiHealthService` exposes a `signal<ApiStatus>` rather than an Observable, and components consume it directly via the signal API (`status()`).
+
+**Why:** Angular signals (stable since v17) offer fine-grained reactivity with less boilerplate than a full NgRx store or manual `BehaviorSubject` management. For a UI of this size, a global store would be overkill.
+
+**Trade-off:** Signals and RxJS Observables have different mental models; interop (`toSignal`, `toObservable`) adds a layer of complexity if the project ever mixes both patterns extensively. The HTTP client (`HttpClient`) still returns Observables, so some conversion boundary always exists.
+
+---
+
+### 6. Frontend as a git submodule
+
+**Decision:** `SkyRouteTravelUI/` is a separate git repository linked to the monorepo root via `.gitmodules`.
+
+**Why:** Keeps frontend and backend histories independent so either can be versioned, branched, and deployed separately. CI/CD pipelines for each can run in isolation.
+
+**Trade-off / Known limitation:** Submodules add friction for new contributors who forget `--recurse-submodules` on clone or `git submodule update --remote` to pull the latest frontend. The submodule currently points to a local path (`./SkyRouteTravelUI`) — update `.gitmodules` to an actual remote URL before collaborating with others or hosting on GitHub.
+
+---
+
+### 7. Open CORS policy in development
+
+**Decision:** The API allows requests from any origin (`builder.Services.AddCors` with a wildcard origin policy) to remove friction during local development.
+
+**Why:** Lets the Angular dev server at `localhost:4200` call the API at `localhost:5218` without per-developer configuration.
+
+**Known limitation:** This policy must be tightened before any public deployment. Replace the wildcard with an explicit allowlist of trusted origins and restrict allowed methods/headers appropriately.
+
+---
+
+### 8. API health-check via a reused endpoint (no dedicated `/health` route)
+
+**Decision:** `ApiHealthService` probes the API by calling `GET /api/providers` on startup rather than a dedicated `/health` or `/ping` endpoint.
+
+**Why:** Avoids adding a new endpoint while still validating that the API and database are reachable end-to-end (the `/providers` route hits EF Core and returns data).
+
+**Trade-off:** The probe response time includes a real DB query. A dedicated lightweight `/health` endpoint with no DB dependency would be faster and more conventional (e.g., for Kubernetes liveness probes). The health check also runs only once at Angular app startup; it does not poll or reconnect automatically if the API goes offline mid-session.
+
+---
+
 ## 📄 License
 
 This project is for educational / portfolio purposes.
