@@ -115,6 +115,74 @@ public class SkyRouteDbContext(DbContextOptions<SkyRouteDbContext> options) : Db
                         DurationMinutes = 600,
                         CabinClass = "First Class",
                         BaseFarePerPassenger = 3500.00m
+                    },
+
+                    // --- LAX → JFK, June 12 2026 (3 flights, varying prices/providers) ---
+
+                    // Flight 1: GlobalAir mid-price Economy
+                    // Final price: $320 * 1.15 = $368.00
+                    new FlightDbModel
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Provider = "GlobalAir",
+                        FlightNumber = "GA-601",
+                        OriginAirportId = lax.Id,
+                        DestinationAirportId = jfk.Id,
+                        DepartureTime = new DateTime(2026, 6, 12, 8, 0, 0, DateTimeKind.Utc),
+                        ArrivalTime = new DateTime(2026, 6, 12, 13, 30, 0, DateTimeKind.Utc),
+                        DurationMinutes = 330,
+                        CabinClass = "Economy",
+                        BaseFarePerPassenger = 320.00m
+                    },
+
+                    // Flight 2: BudgetWings standard discount Economy
+                    // Final price: $150 * 0.90 = $135.00 (above $29.99 minimum — normal case)
+                    new FlightDbModel
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Provider = "BudgetWings",
+                        FlightNumber = "BW-601",
+                        OriginAirportId = lax.Id,
+                        DestinationAirportId = jfk.Id,
+                        DepartureTime = new DateTime(2026, 6, 12, 11, 0, 0, DateTimeKind.Utc),
+                        ArrivalTime = new DateTime(2026, 6, 12, 16, 30, 0, DateTimeKind.Utc),
+                        DurationMinutes = 330,
+                        CabinClass = "Economy",
+                        BaseFarePerPassenger = 150.00m
+                    },
+
+                    // Flight 3: BudgetWings edge case — 10% discount falls below minimum price
+                    // $28.00 * 0.90 = $25.20 < $29.99 minimum → final price clamped to $29.99
+                    new FlightDbModel
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Provider = "BudgetWings",
+                        FlightNumber = "BW-602",
+                        OriginAirportId = lax.Id,
+                        DestinationAirportId = jfk.Id,
+                        DepartureTime = new DateTime(2026, 6, 12, 21, 0, 0, DateTimeKind.Utc),
+                        ArrivalTime = new DateTime(2026, 6, 13, 2, 30, 0, DateTimeKind.Utc),
+                        DurationMinutes = 330,
+                        CabinClass = "Economy",
+                        BaseFarePerPassenger = 28.00m
+                    },
+
+                    // --- LAX → JFK, June 13 2026 (1 flight) ---
+
+                    // Flight 4: GlobalAir Business class next-day option
+                    // Final price: $850 * 1.15 = $977.50
+                    new FlightDbModel
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        Provider = "GlobalAir",
+                        FlightNumber = "GA-602",
+                        OriginAirportId = lax.Id,
+                        DestinationAirportId = jfk.Id,
+                        DepartureTime = new DateTime(2026, 6, 13, 9, 0, 0, DateTimeKind.Utc),
+                        ArrivalTime = new DateTime(2026, 6, 13, 14, 30, 0, DateTimeKind.Utc),
+                        DurationMinutes = 330,
+                        CabinClass = "Business",
+                        BaseFarePerPassenger = 850.00m
                     }
                 );
                 await context.SaveChangesAsync();
